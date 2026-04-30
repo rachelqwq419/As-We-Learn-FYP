@@ -28,7 +28,7 @@
 
 ### 🎮 如何遊玩
 1. 前往本專案的 [Releases](https://github.com/rachelqwq419/AS-WE-LEARN-final-new/releases) 頁面。
-2. 下載最新版本的 `AsWeLearn_Game_V1.0.zip`。
+2. 下載最新版本的 `AsWeLearn.zip`。
 3. 解壓縮後執行 `AS WE LEARN.exe` 即可開始冒險！
 
 ---
@@ -47,7 +47,7 @@
 
 ### 🎮 如何游玩
 1. 前往本项目的 [Releases](https://github.com/rachelqwq419/AS-WE-LEARN-final-new/releases) 页面。
-2. 下载最新版本的 `AsWeLearn_Game_V1.0.zip`。
+2. 下载最新版本的 `AsWeLearn.zip`。
 3. 解压缩后运行 `AS WE LEARN.exe` 即可开始冒险！
 
 ---
@@ -66,7 +66,7 @@ To solve the "chocolate-covered broccoli" problem in ed-tech, this game introduc
 
 ### 🎮 How to Play
 1. Navigate to the [Releases](https://github.com/rachelqwq419/AS-WE-LEARN-final-new/releases) tab of this repository.
-2. Download the latest `AsWeLearn_Game_V1.0.zip`.
+2. Download the latest `AsWeLearn.zip`.
 3. Extract the zip file and run `AS WE LEARN.exe` to begin your journey!
 
 ---
