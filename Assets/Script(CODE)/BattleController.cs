@@ -5,6 +5,9 @@ using UnityEngine.UI;
 using TMPro;
 using UnityEngine.SceneManagement;
 
+/// <summary>
+/// 戰鬥狀態枚舉：開始、玩家回合、敵人回合、勝利、失敗
+/// </summary>
 public enum BattleState { START, PLAYER_TURN, ENEMY_TURN, WON, LOST }
 
 public class BattleController : MonoBehaviour
@@ -15,43 +18,39 @@ public class BattleController : MonoBehaviour
     public BattleState state;
     public int turnCount = 0;
 
-    [Header("角色")]
+    [Header("角色引用")]
     public Animator playerAnimator;
-
-    [Header("當前角色")]
     public Character currentPlayer;
 
-    [Header("特效 (VFX)")]
+    [Header("視覺特效 (VFX)")]
     public GameObject vfxSwordSlash;
     public GameObject vfxMagicExplosion;
     public GameObject vfxEnemyHit;
 
-    // 🔥 NEW: 鏡頭震動 (請把 Main Camera 拖進來)
+    [Header("相機功能")]
     public CameraShake cameraShake;
 
-    [Header("音效來源")]
+    [Header("音頻資源")]
     public AudioSource musicSource;
     public AudioSource sfxSource;
-
-    [Header("音效素材")]
     public AudioClip bgmBattle;
     public AudioClip sfxSword;
     public AudioClip sfxMagic;
     public AudioClip sfxCorrect;
     public AudioClip sfxWrong;
-    public AudioClip sfxHurt;       // 玩家受傷
-    public AudioClip sfxEnemyHurt;  // 怪物受傷
+    public AudioClip sfxHurt;
+    public AudioClip sfxEnemyHurt;
     public AudioClip sfxWin;
     public AudioClip sfxLose;
     public AudioClip sfxClick;
 
-    [Header("UI 綁定")]
+    [Header("UI 介面")]
     public TextMeshProUGUI txtTurnIndicator;
     public TextMeshProUGUI txtTurnCount;
     public TextMeshProUGUI txtCombatLog;
     public BattleUIManager uiManager;
 
-    [Header("儀表板")]
+    [Header("數值顯示")]
     public TextMeshProUGUI txtPlayerName;
     public TextMeshProUGUI txtPlayerHP;
     public Slider sliderPlayerHP;
@@ -59,20 +58,22 @@ public class BattleController : MonoBehaviour
     public TextMeshProUGUI txtEnemyHP;
     public Slider sliderEnemyHP;
 
-    [Header("數值設定")]
+    [Header("戰鬥參數")]
     private int playerCurrentHP;
-    /// <summary>0=中文 1=英文 2=數學；UI Area Lock 用。</summary>
     public EnemyData currentEnemy;
 
-    [Header("學習結算（Session-based）")]
+    [Header("學習數據結算")]
     public int correctCount = 0;
     public int wrongCount = 0;
 
-    [Header("結算 UI（可選：冇綁就自動生成）")]
+    [Header("結算 UI 面板")]
     public GameObject endReportPanel;
     public TextMeshProUGUI endReportText;
 
-    void Awake() { instance = this; }
+    void Awake()
+    {
+        instance = this;
+    }
 
     void OnEnable()
     {
@@ -86,6 +87,7 @@ public class BattleController : MonoBehaviour
 
     void Start()
     {
+        // 初始化戰鬥數據
         state = BattleState.START;
         turnCount = 0;
         correctCount = 0;
@@ -93,14 +95,14 @@ public class BattleController : MonoBehaviour
         txtPlayerName.text = "準備中...";
         UpdateCombatLog("");
 
-        // 播放 BGM
+        // 背景音樂播放
         if (musicSource != null && bgmBattle != null)
         {
             musicSource.clip = bgmBattle;
             musicSource.Play();
         }
 
-        // 自動抓取震動腳本 (如果忘記拖的話)
+        // 自動獲取必要組件引用
         if (cameraShake == null) cameraShake = FindObjectOfType<CameraShake>();
         if (uiManager == null) uiManager = FindObjectOfType<BattleUIManager>();
 
@@ -110,12 +112,14 @@ public class BattleController : MonoBehaviour
         Invoke("SetupBattle", 0.1f);
     }
 
+    /// <summary>
+    /// 初始化戰鬥場景、加載隊伍角色及設置位置
+    /// </summary>
     void SetupBattle()
     {
-        // 1. 自動從 Resources/Characters 載入角色 (如果隊伍空)
+        // 隊伍為空時的備份載入邏輯
         if (TeamManager.Instance != null && TeamManager.Instance.playerTeamCharacters.Count == 0)
         {
-            Debug.Log("隊伍空咗！自動從 Resources/Characters 載入角色...");
             GameObject p0 = Resources.Load<GameObject>("Characters/Bella");
             GameObject p1 = Resources.Load<GameObject>("Characters/Kael");
             GameObject p2 = Resources.Load<GameObject>("Characters/Mia");
@@ -127,31 +131,30 @@ public class BattleController : MonoBehaviour
 
         if (TeamManager.Instance == null || TeamManager.Instance.playerTeamCharacters.Count == 0)
         {
-            Debug.LogError("Resources 找不到角色！");
+            Debug.LogError("無法載入角色資源");
             return;
         }
 
-        // 🔥 NEW: 強制為隊伍重新排隊！(解決每次入場順序唔同嘅問題)
-        // 強制順序: Kael (0) -> Bella (1) -> Mia (2) -> 其他/武士
+        // 依據角色名稱進行排序（Kael > Bella > Mia）
         TeamManager.Instance.playerTeamCharacters.Sort((a, b) =>
         {
             int GetOrder(Character c)
             {
                 if (c == null || string.IsNullOrEmpty(c.characterName)) return 99;
                 string name = c.characterName.ToLower();
-                if (name.Contains("kael") || name.Contains("keal")) return 0; // 兼容兩種串法
+                if (name.Contains("kael") || name.Contains("keal")) return 0;
                 if (name.Contains("bella")) return 1;
                 if (name.Contains("mia")) return 2;
-                return 10; // 武士或其他角色掉去後面
+                return 10;
             }
             return GetOrder(a).CompareTo(GetOrder(b));
         });
 
-        // 2. 收埋武士
+        // 隱藏非戰鬥場景角色
         GameObject samurai = GameObject.Find("Samurai");
         if (samurai != null) samurai.SetActive(false);
 
-        // 3. 準備怪物資料
+        // 載入敵人資料
         currentEnemy = FindObjectOfType<EnemyData>();
         if (currentEnemy != null)
         {
@@ -162,25 +165,22 @@ public class BattleController : MonoBehaviour
         if (QuestionManager.instance != null)
             QuestionManager.instance.ResetMathQuestionUsageForBattle();
 
-        // 4. 強制將「真身」排好隊！
-        // 由於已經排咗序，positions[0] 一定係 Kael, positions[1] 係 Bella, positions[2] 係 Mia
+        // 預設戰鬥位置坐標
         Vector3[] positions = new Vector3[] {
             new Vector3(-6f, 55f, -1f),
             new Vector3(-8f, 55f, -1f),
             new Vector3(-10f, 55f, -1f)
         };
 
+        // 初始化所有隊員狀態與位置
         for (int i = 0; i < TeamManager.Instance.playerTeamCharacters.Count; i++)
         {
             Character c = TeamManager.Instance.playerTeamCharacters[i];
             if (c != null)
             {
-                c.gameObject.SetActive(true); // 確保真身現形
-
-                // 🔥 關鍵修正：每次開新一場戰鬥，自動幫全隊補滿血！
+                c.gameObject.SetActive(true);
                 c.health = c.maxHealth;
 
-                // 根據隊伍順序，安排佢哋企喺指定位置
                 if (i < positions.Length)
                 {
                     c.transform.position = positions[i];
@@ -188,9 +188,7 @@ public class BattleController : MonoBehaviour
             }
         }
 
-        // 5. 預設將控制權交畀第 0 隻角色 (即係 Kael)
         SwitchCharacter(0);
-
         UpdateUI();
         StartCoroutine(BattleStartFlow());
     }
@@ -214,17 +212,14 @@ public class BattleController : MonoBehaviour
         uiManager.SetInteractable(true);
     }
 
-    // === 玩家攻擊 ===
+    /// <summary>
+    /// 玩家普通物理攻擊邏輯
+    /// </summary>
     public void PlayerAttack_Normal()
     {
         if (state != BattleState.PLAYER_TURN) return;
-        if (currentPlayer == null || currentEnemy == null)
-        {
-            Debug.LogWarning("缺少 currentPlayer 或 currentEnemy");
-            return;
-        }
+        if (currentPlayer == null || currentEnemy == null) return;
 
-        // 教育向：物理攻擊接近無效，迫玩家答題
         float damageMultiplier = 0.05f;
         int totalDamage = Mathf.RoundToInt(currentPlayer.characterData.baseAttackPower * damageMultiplier);
 
@@ -232,15 +227,18 @@ public class BattleController : MonoBehaviour
         StartCoroutine(PlayerAttackSequence("Attack", totalDamage, msg, vfxSwordSlash, sfxSword, 0.1f));
     }
 
+    /// <summary>
+    /// 玩家魔法攻擊（學習答題結果相關）
+    /// </summary>
     public void PlayerAttack_Magic(bool isCorrect, int attackAttributeID)
     {
         if (state != BattleState.PLAYER_TURN) return;
         if (currentPlayer == null || currentEnemy == null) return;
 
-        // 第四招：記錄正誤數（學習反饋）
         if (isCorrect) correctCount++;
         else wrongCount++;
 
+        // 計算魔法傷害基礎值（受 MP 與裝備加成）
         float baseMP = currentPlayer.characterData.baseMaxMana;
         float totalMP = currentPlayer.GetTotalStat(StatsType.MP);
         float baseAD = currentPlayer.characterData.baseAttackPower;
@@ -254,6 +252,7 @@ public class BattleController : MonoBehaviour
         string damageColor = "cyan";
         float shakePower = 0.1f;
 
+        // 處理答題正確/錯誤的傷害修正與屬性加成
         if (isCorrect)
         {
             sfxSource.PlayOneShot(sfxCorrect);
@@ -288,11 +287,12 @@ public class BattleController : MonoBehaviour
             }
         }
 
-        // 學科專精：對應科目 +20%（鼓勵換人）
+        // 處理學科專精加成
         float specializationMultiplier = GetSubjectSpecializationMultiplier(attackAttributeID);
         if (specializationMultiplier > 1f)
             totalDamage = Mathf.RoundToInt(totalDamage * specializationMultiplier);
 
+        // 處理暴擊計算
         bool isCrit = Random.value <= currentPlayer.GetTotalStat(StatsType.CR);
         if (isCrit)
         {
@@ -300,8 +300,7 @@ public class BattleController : MonoBehaviour
             damageColor = "orange";
         }
 
-        string specNote = specializationMultiplier > 1f ? " <color=#00FFFF></color>" : "";
-        string msg = $"{resultPrefix}{specNote} 對 {currentEnemy.monsterName} 造成了 <color={damageColor}><b>{totalDamage}</b></color> 點傷害。";
+        string msg = $"{resultPrefix} 對 {currentEnemy.monsterName} 造成了 <color={damageColor}><b>{totalDamage}</b></color> 點傷害。";
         if (isCrit) msg += " <color=red>暴擊！</color>";
 
         StartCoroutine(PlayerAttackSequence("Attack", totalDamage, msg, vfxMagicExplosion, sfxMagic, shakePower));
@@ -325,6 +324,9 @@ public class BattleController : MonoBehaviour
         SceneManager.LoadScene("Map_MainCity");
     }
 
+    /// <summary>
+    /// 執行玩家攻擊序列，包含動畫、音效、特效與傷害結算
+    /// </summary>
     IEnumerator PlayerAttackSequence(string animName, int damage, string customMessage, GameObject vfxPrefab, AudioClip soundClip, float shakePower)
     {
         uiManager.SetInteractable(false);
@@ -369,6 +371,9 @@ public class BattleController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 執行敵方攻擊序列與玩家受傷邏輯
+    /// </summary>
     IEnumerator EnemyTurn()
     {
         ShowTurnText("敵方回合");
@@ -390,6 +395,7 @@ public class BattleController : MonoBehaviour
             }
         }
 
+        // 計算敵方傷害（考慮防禦力減傷）
         int enemyDmg = (currentEnemy != null) ? currentEnemy.damage : 50;
         float reductionMultiplier = 100f / (100f + currentPlayer.GetTotalStat(StatsType.DF));
         int finalDmg = Mathf.RoundToInt(enemyDmg * reductionMultiplier);
@@ -422,17 +428,23 @@ public class BattleController : MonoBehaviour
         Destroy(effect, 2f);
     }
 
+    /// <summary>
+    /// 戰鬥結束處理：發放獎勵、更新狀態與播放結算音效
+    /// </summary>
     void EndBattle()
     {
         if (musicSource != null) musicSource.Stop();
 
-        // 🔥 核心修改：戰鬥結束時，強制收埋後面嗰堆阻噏嘅舊文字
+        // 隱藏戰鬥過程中的動態 UI
         if (txtCombatLog != null) txtCombatLog.gameObject.SetActive(false);
         if (txtTurnIndicator != null) txtTurnIndicator.gameObject.SetActive(false);
 
         if (state == BattleState.WON)
         {
-            GoldManager.instance.AddGold(10);
+            // 依據關卡等級獲取金幣
+            int earnedGold = GameData.chosenLevel;
+            GoldManager.instance.AddGold(earnedGold);
+
             if (sfxSource != null && sfxWin != null) sfxSource.PlayOneShot(sfxWin);
         }
         else if (state == BattleState.LOST)
@@ -454,12 +466,8 @@ public class BattleController : MonoBehaviour
 
     IEnumerator ReturnToMenu()
     {
-        // 俾玩家睇到結算報告（簡單但足夠 present）
         yield return new WaitForSeconds(5f);
-
-        // 離開前關閉結算 UI，避免被持久 Canvas 帶去下一個場景
         if (endReportPanel != null) endReportPanel.SetActive(false);
-
         SceneManager.LoadScene("Map_MainCity");
     }
 
@@ -477,11 +485,14 @@ public class BattleController : MonoBehaviour
             txtEnemyHP.text = $"{currentEnemy.currentHP} / {currentEnemy.maxHP}";
         }
     }
+
     void UpdateTurnCountUI() { if (txtTurnCount != null) txtTurnCount.text = $"{turnCount}T"; }
     void ShowTurnText(string text) { if (txtTurnIndicator != null) { txtTurnIndicator.text = text; txtTurnIndicator.gameObject.SetActive(true); } }
     void UpdateCombatLog(string text) { if (txtCombatLog != null) { txtCombatLog.text = text; txtCombatLog.gameObject.SetActive(true); } }
 
-    // === 🔄 點擊頭像切換控制權 ===
+    /// <summary>
+    /// 獲取角色對應學科的屬性傷害乘數
+    /// </summary>
     float GetSubjectSpecializationMultiplier(int attackAttributeID)
     {
         if (currentPlayer == null || string.IsNullOrEmpty(currentPlayer.characterName)) return 1f;
@@ -492,21 +503,24 @@ public class BattleController : MonoBehaviour
         return 1f;
     }
 
+    /// <summary>
+    /// 切換玩家角色，並保存當前角色的剩餘血量
+    /// </summary>
     public void SwitchCharacter(int teamIndex)
     {
         if (TeamManager.Instance == null || teamIndex >= TeamManager.Instance.playerTeamCharacters.Count)
         {
-            Debug.LogWarning($"隊伍無第 {teamIndex} 個角色！");
+            Debug.LogWarning($"無效的隊伍索引: {teamIndex}");
             return;
         }
 
-        // 🔥 關鍵修正 1：喺換人之前，將當前場上角色嘅剩餘血量儲存返入佢個 Script
+        // 保存換人前的血量狀態
         if (currentPlayer != null)
         {
             currentPlayer.health = playerCurrentHP;
         }
 
-        // 切換到新角色
+        // 設置活動角色物件與位置
         for (int i = 0; i < TeamManager.Instance.playerTeamCharacters.Count; i++)
         {
             Character c = TeamManager.Instance.playerTeamCharacters[i];
@@ -521,10 +535,10 @@ public class BattleController : MonoBehaviour
         currentPlayer = TeamManager.Instance.playerTeamCharacters[teamIndex];
         playerAnimator = currentPlayer.GetComponentInChildren<Animator>();
 
-        // 🔥 關鍵修正 2：重新計算裝備數值，但唔好呼叫會自動補血嘅 InitializeFromData
+        // 重新計算角色裝備加成後的數值
         currentPlayer.RecalculateStats();
 
-        // 讀取新角色「本身剩低」嘅血量，而唔係重新補滿
+        // 載入該角色之前剩餘的血量
         playerCurrentHP = currentPlayer.health;
 
         txtPlayerName.text = currentPlayer.characterName;
@@ -532,6 +546,9 @@ public class BattleController : MonoBehaviour
         UpdateCombatLog($"切換至 <color=yellow>{currentPlayer.characterName}</color>！");
     }
 
+    /// <summary>
+    /// 確保結算介面（Panel 與 Text）已在 Canvas 下正確生成並配置
+    /// </summary>
     void EnsureEndReportUI()
     {
         if (endReportPanel != null && endReportText != null) return;
@@ -541,7 +558,7 @@ public class BattleController : MonoBehaviour
 
         if (endReportPanel == null)
         {
-            // Full-screen overlay
+            // 創建背景遮罩
             endReportPanel = new GameObject("EndReportPanel", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
             endReportPanel.transform.SetParent(canvas.transform, false);
 
@@ -557,7 +574,7 @@ public class BattleController : MonoBehaviour
 
         if (endReportText == null)
         {
-            // Center card (方格物件)
+            // 創建結算資訊卡片背景
             GameObject cardObj = new GameObject("EndReportCard", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
             cardObj.transform.SetParent(endReportPanel.transform, false);
 
@@ -565,15 +582,13 @@ public class BattleController : MonoBehaviour
             crt.anchorMin = new Vector2(0.5f, 0.5f);
             crt.anchorMax = new Vector2(0.5f, 0.5f);
             crt.pivot = new Vector2(0.5f, 0.5f);
-
-            // 🔥 修改位置：將 Y 由 0 改做 100f (數值越大越向上搬)
             crt.anchoredPosition = new Vector2(0f, 100f);
             crt.sizeDelta = new Vector2(1000f, 500f);
 
             var cimg = cardObj.GetComponent<Image>();
             cimg.color = new Color(0f, 0f, 0f, 0.80f);
 
-            // Text inside card (文字物件)
+            // 創建文本顯示物件
             GameObject textObj = new GameObject("EndReportText", typeof(RectTransform), typeof(CanvasRenderer), typeof(TextMeshProUGUI));
             textObj.transform.SetParent(cardObj.transform, false);
 
@@ -586,10 +601,7 @@ public class BattleController : MonoBehaviour
             endReportText = textObj.GetComponent<TextMeshProUGUI>();
             endReportText.alignment = TextAlignmentOptions.Center;
             endReportText.enableAutoSizing = true;
-
-            // 🔥 新增：強制設定為粗體
             endReportText.fontStyle = FontStyles.Bold;
-
             endReportText.fontSizeMax = 80;
             endReportText.fontSizeMin = 40;
             endReportText.fontSize = 70;
@@ -597,8 +609,7 @@ public class BattleController : MonoBehaviour
             endReportText.enableWordWrapping = true;
             endReportText.richText = true;
 
-            // 🔧 Fix: 只係結算報告變方格＝字體冇中文字形
-            // 最穩係沿用場景內其他已正常顯示中文的 TMP 字體（例如 combat log / turn indicator）
+            // 設置字體以支援中文顯示
             if (txtCombatLog != null && txtCombatLog.font != null)
             {
                 endReportText.font = txtCombatLog.font;
@@ -611,10 +622,12 @@ public class BattleController : MonoBehaviour
             }
         }
 
-        // Always keep it on top
         endReportPanel.transform.SetAsLastSibling();
     }
 
+    /// <summary>
+    /// 計算並顯示戰鬥結算報告
+    /// </summary>
     void ShowEndReport()
     {
         EnsureEndReportUI();
@@ -626,19 +639,19 @@ public class BattleController : MonoBehaviour
         string titleText = "";
         if (state == BattleState.WON)
         {
-            titleText = "<color=#FFD700>Victory! Received 10 gold coins.</color>\n\n";
+            int earnedGold = GameData.chosenLevel;
+            titleText = $"<color=#FFD700>勝利！獲得了 {earnedGold} 枚金幣。</color>\n\n";
         }
         else
         {
-            titleText = "<color=#FF9999>Defeat...</color>\n\n";
+            titleText = "<color=#FF9999>戰鬥失敗...</color>\n\n";
         }
 
-        // 🔥 修改內容：喺成串文字前後加上 <b>...</b>
         endReportText.text = "<b>" +
             titleText +
-            $"Learning Settlement Report\n" +
-            $"Correctly <color=#55FF55>{correctCount}</color> , Incorrectly <color=#FF5555>{wrongCount}</color>.\n" +
-            $"Accuracy: {acc:0.#}%" +
+            $"學習結算報告\n" +
+            $"答對：<color=#55FF55>{correctCount}</color>，答錯：<color=#FF5555>{wrongCount}</color>\n" +
+            $"正確率：{acc:0.#}%" +
             "</b>";
 
         endReportPanel.SetActive(true);
@@ -646,7 +659,7 @@ public class BattleController : MonoBehaviour
 
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        // 只要唔係戰鬥場景，就確保結算 UI 唔會殘留
+        // 離開戰鬥場景時銷毀結算面板，防止殘留在持久化 Canvas
         if (scene.name != "BattleScene")
         {
             if (endReportPanel != null)

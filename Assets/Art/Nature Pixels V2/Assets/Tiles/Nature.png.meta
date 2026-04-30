@@ -1,9 +1,9 @@
 fileFormatVersion: 2
-guid: 9367e38090e9988408ae08a21db43393
+guid: ebb998b84ab63a24e8b6fec9a38cd960
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
-  serializedVersion: 13
+  serializedVersion: 11
   mipmaps:
     mipMapMode: 0
     enableMipMap: 0
@@ -20,12 +20,11 @@ TextureImporter:
     externalNormalMap: 0
     heightScale: 0.25
     normalMapFilter: 0
-    flipGreenChannel: 0
   isReadable: 0
   streamingMipmaps: 0
   streamingMipmapsPriority: 0
   vTOnly: 0
-  ignoreMipmapLimit: 0
+  ignoreMasterTextureLimit: 0
   grayScaleToAlpha: 0
   generateCubemap: 6
   cubemapConvolution: 0
@@ -64,8 +63,6 @@ TextureImporter:
   textureFormatSet: 0
   ignorePngGamma: 0
   applyGammaDecoding: 0
-  swizzle: 50462976
-  cookieLightType: 1
   platformSettings:
   - serializedVersion: 3
     buildTarget: DefaultTexturePlatform
@@ -77,7 +74,6 @@ TextureImporter:
     crunchedCompression: 0
     allowsAlphaSplitting: 0
     overridden: 0
-    ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 3
@@ -90,7 +86,6 @@ TextureImporter:
     crunchedCompression: 0
     allowsAlphaSplitting: 0
     overridden: 0
-    ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 3
@@ -103,7 +98,6 @@ TextureImporter:
     crunchedCompression: 0
     allowsAlphaSplitting: 0
     overridden: 0
-    ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 3
@@ -116,7 +110,6 @@ TextureImporter:
     crunchedCompression: 0
     allowsAlphaSplitting: 0
     overridden: 0
-    ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 3
@@ -129,7 +122,6 @@ TextureImporter:
     crunchedCompression: 0
     allowsAlphaSplitting: 0
     overridden: 0
-    ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
@@ -3191,153 +3183,154 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      Nature_0: 725788814
-      Nature_1: 133935586
-      Nature_10: -1964067284
-      Nature_100: -1803513609
-      Nature_101: -1706519406
-      Nature_102: 518419065
-      Nature_103: -1620244690
-      Nature_104: 364099786
-      Nature_105: 1292738918
-      Nature_106: 1443176799
-      Nature_107: -1511794649
-      Nature_108: 166551012
-      Nature_109: 191607968
-      Nature_11: -501679589
+      Nature_42: 1417036990
+      Nature_53: -265574542
+      Nature_62: -1038676773
+      Nature_58: -633897299
+      Nature_90: 524461092
+      Nature_136: 1592076505
       Nature_110: 2145890993
-      Nature_111: 2088442013
-      Nature_112: -649220494
-      Nature_113: 1264706652
-      Nature_114: -2008717280
-      Nature_115: -445005343
-      Nature_116: 1294964563
-      Nature_117: -1553231140
-      Nature_118: 664342251
-      Nature_119: -761188092
-      Nature_12: -347615364
-      Nature_120: 1412629409
-      Nature_121: -638437536
-      Nature_122: -1984774281
-      Nature_123: -116737609
-      Nature_124: -901731259
-      Nature_125: -413403448
-      Nature_126: 303585125
+      Nature_100: -1803513609
+      Nature_31: 263594224
+      Nature_17: -7272757
       Nature_127: -1547698069
       Nature_128: -1082654675
-      Nature_129: 978785160
-      Nature_13: -873320931
-      Nature_130: 1156934456
-      Nature_131: -1021584884
-      Nature_132: 343089648
-      Nature_133: -958443678
-      Nature_134: 729170341
-      Nature_135: 2081996478
-      Nature_136: 1592076505
-      Nature_137: -523945876
-      Nature_138: 1960129120
-      Nature_139: 1887425213
-      Nature_14: 1759722386
-      Nature_140: -1618847480
-      Nature_141: -616016762
-      Nature_142: -994659729
-      Nature_143: 1323327587
-      Nature_144: 75830440
-      Nature_15: 313979622
-      Nature_16: -1359529779
-      Nature_17: -7272757
-      Nature_18: 1185292615
-      Nature_19: -1360893241
-      Nature_2: -700384684
-      Nature_20: 1746054751
-      Nature_21: -1443153450
-      Nature_22: -651133197
-      Nature_23: 1372001397
       Nature_24: 1443260216
-      Nature_25: -758444855
-      Nature_26: -1093520924
-      Nature_27: 1005916331
-      Nature_28: 1482495221
       Nature_29: 2042712742
-      Nature_3: -702605469
-      Nature_30: 2084998824
-      Nature_31: 263594224
-      Nature_32: -253198214
-      Nature_33: -847896336
-      Nature_34: 1360047559
-      Nature_35: 1848446269
-      Nature_36: 777146854
-      Nature_37: 251577712
-      Nature_38: 1298696358
-      Nature_39: -2114237060
-      Nature_4: 146164442
-      Nature_40: 667315009
-      Nature_41: 184042630
-      Nature_42: 1417036990
+      Nature_16: -1359529779
+      Nature_22: -651133197
       Nature_43: -1801843491
-      Nature_44: 346730455
-      Nature_45: -648772868
-      Nature_46: 128168756
-      Nature_47: 805801825
-      Nature_48: -2010149775
-      Nature_49: -610749201
-      Nature_5: -627293594
-      Nature_50: 1543932604
-      Nature_51: 2096426811
-      Nature_52: -537834092
-      Nature_53: -265574542
-      Nature_54: -2043700660
-      Nature_55: -772001786
-      Nature_56: -1533480154
-      Nature_57: -1191499716
-      Nature_58: -633897299
-      Nature_59: -1612995658
-      Nature_6: 1651222422
       Nature_60: 44231688
-      Nature_61: -613193714
-      Nature_62: -1038676773
-      Nature_63: 1910486670
-      Nature_64: -888343467
-      Nature_65: 1372149820
-      Nature_66: -1855299683
-      Nature_67: 559425037
-      Nature_68: 1056944588
-      Nature_69: -1046759213
-      Nature_7: -1646127436
-      Nature_70: -381802761
-      Nature_71: -1994080175
-      Nature_72: -1388856057
-      Nature_73: 639773551
-      Nature_74: 1832086264
-      Nature_75: 311677211
-      Nature_76: -227189266
-      Nature_77: 731930974
-      Nature_78: -1177669991
-      Nature_79: -434449060
-      Nature_8: -765906972
-      Nature_80: -1721064980
-      Nature_81: -258487888
-      Nature_82: -1054199119
-      Nature_83: -1110226628
-      Nature_84: 1199150613
-      Nature_85: -1790529779
-      Nature_86: 1714413390
-      Nature_87: -1482483612
       Nature_88: 966644798
-      Nature_89: 2101491024
-      Nature_9: 1938569132
-      Nature_90: 524461092
+      Nature_52: -537834092
+      Nature_106: 1443176799
+      Nature_18: 1185292615
+      Nature_30: 2084998824
       Nature_91: 850359593
-      Nature_92: 1777685415
+      Nature_26: -1093520924
+      Nature_34: 1360047559
+      Nature_85: -1790529779
+      Nature_7: -1646127436
+      Nature_69: -1046759213
+      Nature_125: -413403448
+      Nature_133: -958443678
+      Nature_132: 343089648
+      Nature_141: -616016762
+      Nature_13: -873320931
+      Nature_11: -501679589
+      Nature_61: -613193714
+      Nature_40: 667315009
+      Nature_76: -227189266
+      Nature_120: 1412629409
+      Nature_8: -765906972
+      Nature_102: 518419065
+      Nature_84: 1199150613
+      Nature_83: -1110226628
+      Nature_113: 1264706652
+      Nature_64: -888343467
+      Nature_115: -445005343
+      Nature_10: -1964067284
       Nature_93: 463909682
       Nature_94: -219430713
-      Nature_95: -1941899902
+      Nature_104: 364099786
+      Nature_108: 166551012
+      Nature_109: 191607968
+      Nature_25: -758444855
+      Nature_48: -2010149775
+      Nature_81: -258487888
+      Nature_57: -1191499716
+      Nature_135: 2081996478
+      Nature_35: 1848446269
+      Nature_87: -1482483612
+      Nature_44: 346730455
+      Nature_138: 1960129120
+      Nature_143: 1323327587
       Nature_96: -899039403
+      Nature_2: -700384684
+      Nature_45: -648772868
+      Nature_15: 313979622
+      Nature_79: -434449060
+      Nature_73: 639773551
+      Nature_112: -649220494
+      Nature_47: 805801825
+      Nature_54: -2043700660
+      Nature_21: -1443153450
+      Nature_137: -523945876
+      Nature_19: -1360893241
+      Nature_1: 133935586
       Nature_97: 439358111
+      Nature_3: -702605469
+      Nature_75: 311677211
+      Nature_122: -1984774281
+      Nature_51: 2096426811
+      Nature_49: -610749201
+      Nature_105: 1292738918
+      Nature_28: 1482495221
+      Nature_80: -1721064980
+      Nature_4: 146164442
+      Nature_63: 1910486670
+      Nature_0: 725788814
+      Nature_71: -1994080175
+      Nature_56: -1533480154
+      Nature_38: 1298696358
+      Nature_89: 2101491024
+      Nature_20: 1746054751
+      Nature_103: -1620244690
       Nature_98: -645357976
+      Nature_66: -1855299683
+      Nature_72: -1388856057
+      Nature_121: -638437536
+      Nature_140: -1618847480
+      Nature_130: 1156934456
+      Nature_119: -761188092
+      Nature_36: 777146854
+      Nature_59: -1612995658
+      Nature_78: -1177669991
       Nature_99: 922114261
-  mipmapLimitGroupName: 
+      Nature_114: -2008717280
+      Nature_123: -116737609
+      Nature_101: -1706519406
+      Nature_23: 1372001397
+      Nature_74: 1832086264
+      Nature_46: 128168756
+      Nature_77: 731930974
+      Nature_65: 1372149820
+      Nature_37: 251577712
+      Nature_117: -1553231140
+      Nature_82: -1054199119
+      Nature_32: -253198214
+      Nature_118: 664342251
+      Nature_124: -901731259
+      Nature_5: -627293594
+      Nature_27: 1005916331
+      Nature_50: 1543932604
+      Nature_9: 1938569132
+      Nature_14: 1759722386
+      Nature_111: 2088442013
+      Nature_107: -1511794649
+      Nature_41: 184042630
+      Nature_126: 303585125
+      Nature_131: -1021584884
+      Nature_129: 978785160
+      Nature_144: 75830440
+      Nature_139: 1887425213
+      Nature_134: 729170341
+      Nature_142: -994659729
+      Nature_6: 1651222422
+      Nature_116: 1294964563
+      Nature_92: 1777685415
+      Nature_12: -347615364
+      Nature_55: -772001786
+      Nature_33: -847896336
+      Nature_70: -381802761
+      Nature_68: 1056944588
+      Nature_95: -1941899902
+      Nature_67: 559425037
+      Nature_39: -2114237060
+      Nature_86: 1714413390
+  spritePackingTag: 
   pSDRemoveMatte: 0
+  pSDShowRemoveMatteOption: 0
   userData: 
   assetBundleName: 
   assetBundleVariant: 

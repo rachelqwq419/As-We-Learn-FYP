@@ -6,43 +6,49 @@ using TMPro;
 using UnityEngine.Networking;
 using System.IO;
 
+/// <summary>
+/// 登錄管理員：處理用戶身份驗證、雲端名單同步以及本地 JSON 存檔的初始化。
+/// </summary>
 public class LoginManager : MonoBehaviour
 {
-    [Header("UI 綁定")]
+    [Header("UI 組件綁定")]
     public TMP_InputField usernameInput;
     public TMP_InputField passwordInput;
     public TMP_Text feedbackText;
 
-    [Header("雲端名單設定")]
-    [Tooltip("請貼上 Google Sheet 發佈為 CSV 的連結")]
+    [Header("遠端數據配置")]
+    [Tooltip("Google Sheet 發佈為 CSV 的原始連結")]
     public string studentCsvUrl = "YOUR_GOOGLE_SHEET_CSV_LINK_HERE";
 
-    // 暫存下載返嚟嘅「帳號:密碼」字典
+    // 存放從雲端同步的帳號與密碼對應表
     private Dictionary<string, string> validStudents = new Dictionary<string, string>();
 
     void Start()
     {
-        // 1. 顯示本機存檔根路徑，方便調試
-        Debug.Log($"<color=yellow>[System]</color> 本機存檔總目錄: {Application.persistentDataPath}");
+        // 紀錄本機存檔路徑，用於開發調試
+        Debug.Log($"[System] Persistent Data Path: {Application.persistentDataPath}");
 
-        // 2. 遊戲啟動即同步雲端名單
+        // 初始化時執行雲端名單同步
         StartCoroutine(DownloadStudentList());
     }
 
-    // 綁定落你個 Quit Button 度
+    /// <summary>
+    /// 退出應用程序，處理編輯器與發佈版本的執行狀態。
+    /// </summary>
     public void QuitGame()
     {
-        Debug.Log("<color=red>[System]</color> 正在關閉遊戲...");
+        Debug.Log("[System] Application Quitting...");
 
-        // 1. 如果係喺 Unity Editor 運行
 #if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;
 #else
-            // 2. 如果係 Build 出嚟嘅真正遊戲程式
-            Application.Quit();
+        Application.Quit();
 #endif
     }
 
+    /// <summary>
+    /// 從指定的 URL 下載 CSV 名單並解析。
+    /// </summary>
     IEnumerator DownloadStudentList()
     {
         feedbackText.text = "正在連接學校系統...";
@@ -52,24 +58,26 @@ public class LoginManager : MonoBehaviour
         if (www.result == UnityWebRequest.Result.Success)
         {
             ParseCSV(www.downloadHandler.text);
-            // 🔥 更新：顯示成功載入的帳號數量
-            feedbackText.text = $"系統連接成功！請登入。";
-            Debug.Log($"[LoginManager] 成功從 CSV 讀取 {validStudents.Count} 個帳號。");
+            feedbackText.text = "系統連接成功！請登入。";
+            Debug.Log($"[LoginManager] 已從雲端加載 {validStudents.Count} 筆帳號資料。");
         }
         else
         {
             feedbackText.text = "網絡錯誤，無法獲取學生名單。";
-            Debug.LogError("CSV Error: " + www.error);
+            Debug.LogError($"CSV Download Error: {www.error}");
         }
     }
 
+    /// <summary>
+    /// 解析 CSV 字串，提取帳號與密碼欄位並存入字典。
+    /// </summary>
     void ParseCSV(string csvData)
     {
         validStudents.Clear();
-        // 兼容不同平台的換行符 (CRLF 或 LF)
+        // 處理跨平台換行符
         string[] rows = csvData.Split(new[] { '\r', '\n' }, System.StringSplitOptions.RemoveEmptyEntries);
 
-        // 由 i=1 開始讀取，跳過 Header 標題行
+        // 略過首行標題，從索引 1 開始處理數據
         for (int i = 1; i < rows.Length; i++)
         {
             string[] columns = rows[i].Split(',');
@@ -85,40 +93,40 @@ public class LoginManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 執行登錄驗證邏輯，包含老師管理通道與學生權限校對。
+    /// </summary>
     public void Login()
     {
         string user = usernameInput.text.Trim();
         string pass = passwordInput.text.Trim();
 
-        // 1. 老師獨立通道
+        // 老師專用管理入口
         if (user.ToLower() == "teacher")
         {
-            Debug.Log("Teacher Mode: Redirecting to Teacher Portal...");
-
-            // 🔥 將下面呢條換成你頭先攞到嗰條網址
-            Application.OpenURL("https://rachelqwq419.github.io/FYPWEB/teacher_portal.html");
-
+            Debug.Log("Directing to Teacher Management Portal...");
+            Application.OpenURL("https://fypweb.pages.dev/");
             feedbackText.text = "歡迎老師，正在打開管理後台...";
             return;
         }
 
-        // 2. 基本檢查
+        // 基本空值檢查
         if (string.IsNullOrEmpty(user) || string.IsNullOrEmpty(pass))
         {
             feedbackText.text = "請輸入帳號及密碼！";
             return;
         }
 
-        // 3. 雲端密碼驗證
+        // 驗證帳號是否存在於名單中且密碼匹配
         if (validStudents.ContainsKey(user) && validStudents[user] == pass)
         {
             feedbackText.text = "登入成功！載入中...";
 
-            // 重要：將當前使用者儲存，供 DataUploader 紀錄錯題使用
-            PlayerPrefs.SetString("CurrentUser", user);
+            // 紀錄當前登錄用戶，供後續數據上傳模組使用
+            PlayerPrefs.SetString("CurrentUser", usernameInput.text);
             PlayerPrefs.Save();
 
-            // 4. 處理本地存檔 JSON
+            // 進入存檔加載與場景跳轉流程
             LoadLocalProgress(user);
         }
         else
@@ -127,34 +135,36 @@ public class LoginManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 檢查本地是否存在該用戶的存檔文件，若無則進行初始化創建。
+    /// </summary>
     private void LoadLocalProgress(string username)
     {
-        // 定義存檔完整路徑
         string fileName = username + "_save.json";
         string path = Path.Combine(Application.persistentDataPath, fileName);
 
-        // 🔥 新增：喺 Console 顯示藍色字路徑，你直接 Click 就會見到檔案
-        Debug.Log($"<color=cyan>[SaveSystem]</color> 帳號 {username} 的存檔路徑: {path}");
+        Debug.Log($"[SaveSystem] User: {username}, File Path: {path}");
 
         if (File.Exists(path))
         {
-            Debug.Log($"[SaveSystem] 搵到 {username} 的舊存檔，準備讀取進度...");
-            // 這裡可以加入讀取 JSON 並還原遊戲狀態的代碼
+            Debug.Log($"[SaveSystem] 已偵測到 {username} 的既有存檔。");
+            // 此處可擴展讀取 JSON 並解析至全局進度管理器的邏輯
         }
         else
         {
-            Debug.Log($"<color=yellow>[SaveSystem]</color> 新學生首次登入，正在為 {username} 建立新 JSON 檔...");
+            Debug.Log($"[SaveSystem] 首次登錄，正在為 {username} 創建初始存檔文件。");
             CreateInitialSaveFile(username, path);
         }
 
-        // 跳轉到主地圖
+        // 驗證完成，跳轉至遊戲主地圖
         UnityEngine.SceneManagement.SceneManager.LoadScene("Map_Start");
     }
 
-    // 真正執行寫入檔案的指令
+    /// <summary>
+    /// 將初始數據結構序列化為 JSON 並寫入硬碟。
+    /// </summary>
     private void CreateInitialSaveFile(string username, string path)
     {
-        // 建立初始資料結構
         UserData initialData = new UserData
         {
             studentName = username,
@@ -162,23 +172,23 @@ public class LoginManager : MonoBehaviour
             levelProgress = 1
         };
 
-        // 轉換為 JSON 格式
         string json = JsonUtility.ToJson(initialData, true);
 
         try
         {
-            // 寫入硬碟
             File.WriteAllText(path, json, System.Text.Encoding.UTF8);
-            Debug.Log("<color=green>[SaveSystem] 存檔建立成功！</color>");
+            Debug.Log("[SaveSystem] 初始 JSON 文件寫入成功。");
         }
         catch (System.Exception e)
         {
-            Debug.LogError("[SaveSystem] 存檔寫入失敗: " + e.Message);
+            Debug.LogError($"[SaveSystem] 文件寫入異常: {e.Message}");
         }
     }
 }
 
-// 存檔數據模板
+/// <summary>
+/// 存檔數據結構：定義需要持久化儲存的用戶進度欄位。
+/// </summary>
 [System.Serializable]
 public class UserData
 {

@@ -12,24 +12,15 @@ EditorBuildSettings:
     path: Assets/Scenes/Map_Start.unity
     guid: 741123bab1293914c9b516b9e8ecdd9d
   - enabled: 1
-    path: Assets/Scenes/MenuScene.unity
-    guid: 3b17d4bc667a5974d871baad52cb7188
-  - enabled: 1
-    path: Assets/Scenes/BattleScene.unity
-    guid: 970e88ae0be780d4a92994da1f576725
-  - enabled: 0
-    path: Assets/Scenes/TestArea.unity
-    guid: 2cda990e2423bbf4892e6590ba056729
-  - enabled: 1
-    path: Assets/Scenes/Map_Home.unity
-    guid: 2d972de231af84a459730ca9d2f94d04
-  - enabled: 1
     path: Assets/Scenes/Map_MainCity.unity
     guid: 7bbbd4b4f72d68b458bc6317d96b34f7
   - enabled: 1
     path: Assets/Scenes/Map_Shop.unity
-    guid: f52a72ddfa5fe5b4eb6433f4a6e9f6b4
+    guid: 6964f78843da0bf4caa3635f119ce255
   - enabled: 1
     path: Assets/Scenes/Battle_Choses.unity
     guid: 4288854a056e2cb47a9e537b98104a1a
+  - enabled: 1
+    path: Assets/Scenes/BattleScene.unity
+    guid: 970e88ae0be780d4a92994da1f576725
   m_configObjects: {}

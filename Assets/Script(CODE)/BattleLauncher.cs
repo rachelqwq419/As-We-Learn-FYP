@@ -24,11 +24,9 @@ public class BattleLauncher : MonoBehaviour
         string subject = GameData.chosenSubject;
         int level = GameData.chosenLevel; // 1~5
 
-        // 防呆機制：如果直接按 Play 沒選單，預設給中文 Lv1
         if (string.IsNullOrEmpty(subject)) subject = "Chinese";
         if (level < 1) level = 1;
 
-        // 修正位：拎走「開」字後面多咗嘅 } 符號
         Debug.Log($"戰鬥開始！科目: {subject}, 等級: {level}");
 
 
@@ -43,7 +41,7 @@ public class BattleLauncher : MonoBehaviour
 
     void SpawnEnemy(string subject, int level)
     {
-        int index = level - 1; // 陣列是從0開始算，所以等級要減1 (Lv1 對應 Index 0)
+        int index = level - 1; 
         GameObject prefabToSpawn = null;
 
         // 根據科目去對應的清單找怪物

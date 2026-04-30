@@ -6,7 +6,6 @@ public class EnemyData : MonoBehaviour
     [Header("基本資料")]
     public string monsterName;
 
-    // 🔥 修改：屬性改成整數代號
     // 0 = 中文 (Chinese)
     // 1 = 英文 (English)
     // 2 = 數學 (Math)

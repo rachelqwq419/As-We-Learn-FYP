@@ -15,7 +15,7 @@ public class CraftingWindow : MonoBehaviour
 
     public void Craft(CraftingRecipe recipe)
     {
-        // 先檢查是否真的夠材料（避免扣了卻合成失敗）
+        // 檢查是否足夠材料
         for (int i = 0; i < recipe.costs.Length; i++)
         {
             int owned = InventoryManager.instance.GetItemQuantity(recipe.costs[i].item);

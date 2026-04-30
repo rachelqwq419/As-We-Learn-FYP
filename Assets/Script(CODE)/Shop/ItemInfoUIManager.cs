@@ -97,4 +97,8 @@ public class ItemInfoUIManager : MonoBehaviour
     {
         
     }
+    private void OnDisable()
+    {
+        Time.timeScale = 1;
+    }
 }

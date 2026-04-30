@@ -6,8 +6,8 @@ using UnityEngine.UI;
 using TMPro;
 
 /// <summary>
-/// 錯題摘要（簡化版）：顯示 Level / Question / Correct answer / Area。
-/// BattleUIManager 會呼叫 <see cref="RecordWrong"/>。
+/// 錯題摘要系統：負責記錄、持久化儲存以及顯示玩家答錯的題目。
+/// 支援 JSON 檔案存取與 UI 列表動態生成。
 /// </summary>
 public class Summary : MonoBehaviour
 {
@@ -28,30 +28,32 @@ public class Summary : MonoBehaviour
         public List<WrongAnswerEntry> items = new List<WrongAnswerEntry>();
     }
 
-    [Header("必填")]
-    [Tooltip("成日 Active 嘅物件（例如 SummaryRoot），上面掛呢個 Summary")]
+    [Header("UI 核心組件")]
+    [Tooltip("摘要面板的根物件 (例如 SummaryRoot)")]
     public GameObject summaryPanelRoot;
 
-    [Tooltip("Scroll View → Viewport → Content（錯題行會生成喺呢度）")]
+    [Tooltip("Scroll View 的內容容器 (Content)，用於生成錯題行")]
     public RectTransform contentRoot;
 
-    [Tooltip("一行嘅模板：下面要有四個 TMP，GameObject 名稱：level、question、correctAnswer、area")]
+    [Tooltip("錯題行的 UI 模板。子物件需包含 level, question, correctAnswer, area 等命名的 TMP 組件")]
     public GameObject rowTemplate;
 
-    [Header("可選")]
-    public bool startHidden = true;
-    public bool persistToDisk = true;
-    public float rowHeight = 88f;
+    [Header("顯示設定")]
+    public bool startHidden = true;        // 啟動時是否預設隱藏
+    public bool persistToDisk = true;      // 是否將資料儲存至硬碟
+    public float rowHeight = 88f;          // 每一行的高度
 
-    [Tooltip("為 Content 加 VerticalLayoutGroup + ContentSizeFitter")]
+    [Tooltip("自動為 Content 加上 VerticalLayoutGroup 與 ContentSizeFitter")]
     public bool setupContentLayout = true;
 
-    [Tooltip("若模板入面有「xxx title」表頭，複製出嚟嘅每行會收埋，避免重複")]
+    [Tooltip("生成行時是否隱藏模板內的標籤 (Title)，避免每行重複顯示標題")]
     public bool hideTitleLabelsInClonedRows = true;
 
+    // 儲存當前會話的錯題記錄
     static readonly List<WrongAnswerEntry> SessionEntries = new List<WrongAnswerEntry>();
     const string FileName = "wrong_answer_summary.json";
 
+    // 存檔路徑指向裝置的持久化資料夾
     static string SavePath => Path.Combine(Application.persistentDataPath, FileName);
 
     void Awake()
@@ -74,8 +76,10 @@ public class Summary : MonoBehaviour
         if (Instance == this) Instance = null;
     }
 
-    // 🔥 NEW: 專門俾 QuitGameManager 呼叫嘅分析函數
-    // 專門俾 QuitGameManager 呼叫嘅分析函數
+    /// <summary>
+    /// 分析當前錯題數據，找出答錯次數最多的學科領域。
+    /// 供 QuitGameManager 等統計模組調用。
+    /// </summary>
     public (string weakest, int count) GetWeakestAreaInfo()
     {
         if (SessionEntries.Count == 0) return ("None", 0);
@@ -83,18 +87,16 @@ public class Summary : MonoBehaviour
         int chinese = 0, english = 0, math = 0;
         foreach (var e in SessionEntries)
         {
-            // 呢度係檢查資料庫入面嘅標籤，通常已經係英文
             if (e.area.Contains("Chinese")) chinese++;
             else if (e.area.Contains("English")) english++;
             else if (e.area.Contains("Math")) math++;
         }
 
-        // 🔥 將下面呢幾行嘅中文字改做英文！
-        string weakest = "Chinese"; // 原本係 "中文"
+        string weakest = "Chinese";
         int max = chinese;
 
-        if (english > max) { weakest = "English"; max = english; } // 原本係 "英文"
-        if (math > max) { weakest = "Math"; max = math; } // 原本係 "數學"
+        if (english > max) { weakest = "English"; max = english; }
+        if (math > max) { weakest = "Math"; max = math; }
 
         return (weakest, max);
     }
@@ -120,6 +122,9 @@ public class Summary : MonoBehaviour
         if (Instance != null) Instance.CloseSummaryPanel();
     }
 
+    /// <summary>
+    /// 記錄一筆新的錯題，並視需求同步至硬碟與更新 UI。
+    /// </summary>
     public static void RecordWrong(int level, string question, string correctAnswer, string area)
     {
         if (string.IsNullOrEmpty(question)) question = "(empty)";
@@ -138,6 +143,9 @@ public class Summary : MonoBehaviour
         if (Instance != null) Instance.RefreshUI();
     }
 
+    /// <summary>
+    /// 將原始學科名稱轉換為易讀的區域標籤。
+    /// </summary>
     public static string AreaLabelFromSubject(string subject)
     {
         if (string.IsNullOrEmpty(subject)) return "-";
@@ -150,6 +158,9 @@ public class Summary : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 清除所有記憶體與硬碟中的錯題記錄。
+    /// </summary>
     public void ClearAll()
     {
         SessionEntries.Clear();
@@ -157,6 +168,9 @@ public class Summary : MonoBehaviour
         RefreshUI();
     }
 
+    /// <summary>
+    /// 從持久化儲存讀取 JSON 數據。
+    /// </summary>
     void LoadFromDisk()
     {
         SessionEntries.Clear();
@@ -166,9 +180,12 @@ public class Summary : MonoBehaviour
             var data = JsonUtility.FromJson<WrongAnswerListFile>(File.ReadAllText(SavePath, System.Text.Encoding.UTF8));
             if (data?.items != null) SessionEntries.AddRange(data.items);
         }
-        catch (Exception e) { Debug.LogWarning("[Summary] Load: " + e.Message); }
+        catch (Exception e) { Debug.LogWarning("[Summary] Load Error: " + e.Message); }
     }
 
+    /// <summary>
+    /// 將當前會話記錄序列化並寫入硬碟。
+    /// </summary>
     static void SaveToDisk()
     {
         try
@@ -176,29 +193,35 @@ public class Summary : MonoBehaviour
             var json = JsonUtility.ToJson(new WrongAnswerListFile { items = new List<WrongAnswerEntry>(SessionEntries) }, true);
             File.WriteAllText(SavePath, json, System.Text.Encoding.UTF8);
         }
-        catch (Exception e) { Debug.LogWarning("[Summary] Save: " + e.Message); }
+        catch (Exception e) { Debug.LogWarning("[Summary] Save Error: " + e.Message); }
     }
+
     void Update()
     {
-        // 喺 Summary 畫面撳 Backspace (退格鍵) 就一嘢清空晒所有舊記錄！
+        // 快捷鍵：在摘要畫面按下 Backspace 可快速清空所有歷史記錄
         if (Input.GetKeyDown(KeyCode.Backspace))
         {
             ClearAll();
-            Debug.Log("Summary 已完全清空！");
+            Debug.Log("Summary data has been fully cleared.");
         }
     }
 
+    /// <summary>
+    /// 重繪摘要 UI 列表。
+    /// 清除舊有的物件並根據當前記錄重新生成每一行。
+    /// </summary>
     public void RefreshUI()
     {
         if (rowTemplate == null || contentRoot == null)
         {
-            Debug.LogWarning("[Summary] 請喺 Inspector 設定 Content Root 同 Row Template。");
+            Debug.LogWarning("[Summary] 請在 Inspector 設定 Content Root 與 Row Template。");
             return;
         }
 
         if (setupContentLayout)
             SetupVerticalList(contentRoot);
 
+        // 清理現有的錯題行（保留模板本身）
         for (int i = contentRoot.childCount - 1; i >= 0; i--)
         {
             Transform c = contentRoot.GetChild(i);
@@ -208,7 +231,7 @@ public class Summary : MonoBehaviour
 
         rowTemplate.SetActive(false);
 
-        // 🔥 倒轉行，最新記錄喺面
+        // 倒序遍歷，讓最新的錯誤顯示在列表頂端
         for (int i = SessionEntries.Count - 1; i >= 0; i--)
         {
             GameObject row = Instantiate(rowTemplate, contentRoot);
@@ -223,6 +246,9 @@ public class Summary : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 動態配置自動佈局組件，確保列表能隨內容成長。
+    /// </summary>
     static void SetupVerticalList(RectTransform content)
     {
         var v = content.GetComponent<VerticalLayoutGroup>();
@@ -258,6 +284,9 @@ public class Summary : MonoBehaviour
         le.flexibleHeight = 0f;
     }
 
+    /// <summary>
+    /// 隱藏副本中的標題物件，避免 UI 過於雜亂。
+    /// </summary>
     static void HideTitles(Transform root)
     {
         foreach (var t in root.GetComponentsInChildren<Transform>(true))
@@ -266,12 +295,17 @@ public class Summary : MonoBehaviour
             if (t.name.IndexOf("title", StringComparison.OrdinalIgnoreCase) >= 0)
                 t.gameObject.SetActive(false);
         }
+
+        // 額外處理重複命名的 area 物件
         var areas = new List<Transform>();
         foreach (var t in root.GetComponentsInChildren<Transform>(true))
             if (t.name == "area") areas.Add(t);
         if (areas.Count >= 2) areas[0].gameObject.SetActive(false);
     }
 
+    /// <summary>
+    /// 將單筆錯題資料填入 UI 行。
+    /// </summary>
     static void FillRow(Transform row, WrongAnswerEntry e)
     {
         SetTmp(row, "level", e.level.ToString());
@@ -324,6 +358,9 @@ public class Summary : MonoBehaviour
         return null;
     }
 
+    /// <summary>
+    /// 移除文本中的自定義圖層標籤 [IMG]...[/IMG]，僅保留文字內容。
+    /// </summary>
     static string StripImg(string s)
     {
         if (string.IsNullOrEmpty(s)) return s;

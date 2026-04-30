@@ -1,33 +1,38 @@
 using UnityEngine;
-using TMPro;
-using UnityEngine.EventSystems; // 🔥 必須加呢行嚟偵測點擊
+using TMP_Pro;
+using UnityEngine.EventSystems;
 
 /// <summary>
-/// 改良版教學面板：支援滑鼠左鍵點擊切換中/英文
+/// 教學面板控制器：管理遊戲操作說明的顯示，並支援點擊切換中英文語系。
 /// </summary>
 public class TutorialPanel : MonoBehaviour, IPointerClickHandler
 {
     public static TutorialPanel Instance { get; private set; }
 
-    [Header("必填")]
+    [Header("UI 組件")]
     public GameObject tutorialPanelRoot;
     public TMP_Text instructionText;
 
-    [Header("文字內容")]
-    [TextArea(10, 30)] public string instructionsCN; // 中文版
-    [TextArea(10, 30)] public string instructionsEN; // 英文版
+    [Header("文本內容")]
+    [TextArea(10, 30)] public string instructionsCN; // 中文文本
+    [TextArea(10, 30)] public string instructionsEN; // 英文文本
 
-    private bool isEnglish = false; // 紀錄而家係咪英文
+    private bool isEnglish = false; // 當前語言狀態標記
 
     void Awake()
     {
-        if (Instance != null && Instance != this) { Destroy(gameObject); return; }
+        // 實作單例模式 (Singleton)
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
         Instance = this;
     }
 
     void Start()
     {
-        // 預設內容
+        // 若 Inspector 未預填文本，則加載預設的教學內容
         if (string.IsNullOrEmpty(instructionsCN))
         {
             instructionsCN = "<size=120%><b>[!] 冒險者指南 (How to Play) / <color=#FFD700><b>左鍵切換語言</b></color> </b></size>\n\n" +
@@ -44,7 +49,7 @@ public class TutorialPanel : MonoBehaviour, IPointerClickHandler
                             "• <color=#FFFF99><b>Bella</b></color> -> 擅長 <b>英文區</b> (傷害 1.2倍)\n" +
                             "• <color=#99CCFF><b>Kael</b></color> -> 擅長 <b>數學區</b> (傷害 1.2倍)\n\n" +
                             "<size=110%><b>> 成長與學習報告</b></size>\n" +
-                            "• 打贏一場戰鬥可獲 <color=#FFD700><b>100 金幣</b></color>。\n" +
+                            "• 打贏一場戰鬥可獲 <color=#FFD700><b>1~5金幣</b></color>。\n" +
                             "• 善用金幣買裝，或收集掉落物<b>合成裝備</b>提升戰力。\n" +
                             "• 隨時點擊畫面上方 <color=#FFaa00><b>Summary</b></color> 查看錯題報告！";
         }
@@ -53,10 +58,10 @@ public class TutorialPanel : MonoBehaviour, IPointerClickHandler
             instructionsEN = "<size=120%><b>[!] Adventurer's Guide (Guide)</b></size>\n\n" +
                             "<size=110%><b>> Basic Controls</b></size>\n" +
                             "• <color=#00FFFF><b>W A S D</b></color>: Move Character\n" +
-                            "• <color=#00FFFF><b>E</b></color>: Interact with NPC (Shop / Crafting Table)\n" +
-                            "• <color=#00FFFF><b>I</b></color>: Open Inventory & Change Equipment\n" +
-                            "• <color=#00FFFF><b>Enter</b></color>: Confirm Input / Login\n" +
-                            "• <color=#00FFFF><b>M</b></color>: Clear Save Data (Reset if you encounter bugs)\n\n" +
+                            "• <color=#00FFFF><b>E</b>: Interact with NPC (Shop / Crafting Table)\n" +
+                            "• <color=#00FFFF><b>I</b>: Open Inventory & Change Equipment\n" +
+                            "• <color=#00FFFF><b>Enter</b>: Confirm Input / Login\n" +
+                            "• <color=#00FFFF><b>M</b>: Clear Save Data (Reset if you encounter bugs)\n\n" +
                             "<size=110%><b>> Battle & Subject Mastery</b></size>\n" +
                             "Normal attacks deal very low damage. Use \"Question\" to answer questions!\n" +
                             "<b>Click character portraits</b> during battle to switch and use specialties:\n" +
@@ -64,28 +69,33 @@ public class TutorialPanel : MonoBehaviour, IPointerClickHandler
                             "• <color=#FFFF99><b>Bella</b></color> -> Master of <b>English Area</b> (1.2x Damage)\n" +
                             "• <color=#99CCFF><b>Kael</b></color> -> Master of <b>Math Area</b> (1.2x Damage)\n\n" +
                             "<size=110%><b>> Progression & Study Report</b></size>\n" +
-                            "• Win a battle to earn <color=#FFD700><b>100 Gold</b></color>.\n" +
+                            "• Win a battle to earn <color=#FFD700><b>1~5 Gold</b></color>.\n" +
                             "• Use Gold to buy gear or collect drops to <b>Craft Equipment</b>.\n" +
-                            "• Need to review? Click <color=#FFaa00><b>Summary</b></color> at the top to see your wrong answers!" ;
+                            "• Need to review? Click <color=#FFaa00><b>Summary</b></color> at the top to see your wrong answers!";
         }
 
-        UpdateDisplay(); // 初始化顯示
+        UpdateDisplay();
 
+        // 初始化時預設隱藏面板
         if (tutorialPanelRoot != null) tutorialPanelRoot.SetActive(false);
     }
 
-    // 🔥 核心功能：當玩家點擊 Panel 嗰陣觸發
+    /// <summary>
+    /// 處理點擊事件：當玩家點擊教學面板時切換語系
+    /// </summary>
     public void OnPointerClick(PointerEventData eventData)
     {
-        // 檢查係咪左鍵點擊
         if (eventData.button == PointerEventData.InputButton.Left)
         {
-            isEnglish = !isEnglish; // 反轉語言狀態
+            isEnglish = !isEnglish;
             UpdateDisplay();
-            Debug.Log("語言已切換: " + (isEnglish ? "English" : "中文"));
+            Debug.Log($"語系切換至: {(isEnglish ? "English" : "中文")}");
         }
     }
 
+    /// <summary>
+    /// 根據當前語系狀態更新 UI 文本內容
+    /// </summary>
     void UpdateDisplay()
     {
         if (instructionText != null)
@@ -94,13 +104,22 @@ public class TutorialPanel : MonoBehaviour, IPointerClickHandler
         }
     }
 
+    // 開啟教學面板並刷新顯示
     public void OpenTutorial()
     {
         if (tutorialPanelRoot != null) tutorialPanelRoot.SetActive(true);
         UpdateDisplay();
     }
 
-    public void CloseTutorial() { if (tutorialPanelRoot != null) tutorialPanelRoot.SetActive(false); }
+    // 關閉教學面板
+    public void CloseTutorial()
+    {
+        if (tutorialPanelRoot != null) tutorialPanelRoot.SetActive(false);
+    }
 
-    public static void OpenTutorialStatic() { if (Instance != null) Instance.OpenTutorial(); }
+    // 供外部腳本調用的靜態開啟方法
+    public static void OpenTutorialStatic()
+    {
+        if (Instance != null) Instance.OpenTutorial();
+    }
 }

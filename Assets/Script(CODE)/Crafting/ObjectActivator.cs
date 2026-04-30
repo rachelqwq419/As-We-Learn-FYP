@@ -12,12 +12,11 @@ public class ObjectActivator : MonoBehaviour
     {
         if (playerInRange)
         {
-            if (Input.GetKeyDown(KeyCode.E))
+            if (Input.GetKeyDown(KeyCode.E) && !objectToActive.activeSelf)
             {
                 objectToActive.SetActive(true);
-                Time.timeScale = 0;
+                Time.timeScale = 0; // 暫停時間
             }
-
         }
     }
 

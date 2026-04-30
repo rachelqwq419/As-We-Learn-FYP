@@ -31,7 +31,7 @@ public class MenuController : MonoBehaviour
     // === 按鈕點擊事件 ===
     void OnStartGameClicked()
     {
-        // 🔥 NEW: 播放音效
+        //播放音效
         if (audioSource != null && startSound != null)
         {
             audioSource.PlayOneShot(startSound);
@@ -85,7 +85,6 @@ public class MenuController : MonoBehaviour
             fadePanel.color = Color.black;
         }
 
-        // 🔥 稍微多等待一點點時間，讓音效播完再切換
         yield return new WaitForSeconds(0.5f);
 
         SceneManager.LoadScene(gameSceneName);

@@ -9,13 +9,12 @@ public class SceneTransition : MonoBehaviour
     public string targetSceneName;
 
     [Header("科目區域名稱 (打 Chinese/English/Math)")]
-    public string subjectName; // 新加呢行
+    public string subjectName;
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.CompareTag("Player"))
         {
-            // 寫低玩家踩中咗邊個區
             if (!string.IsNullOrEmpty(subjectName))
             {
                 PlayerPrefs.SetString("CurrentSubject", subjectName);

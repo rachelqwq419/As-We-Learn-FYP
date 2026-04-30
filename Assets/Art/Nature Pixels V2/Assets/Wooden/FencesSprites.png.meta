@@ -1,9 +1,9 @@
 fileFormatVersion: 2
-guid: d1dd4643960e58a4ab439fdaa89104a8
+guid: 4132d415d2e6ab745a148f0dfbb37b62
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
-  serializedVersion: 13
+  serializedVersion: 11
   mipmaps:
     mipMapMode: 0
     enableMipMap: 0
@@ -20,12 +20,11 @@ TextureImporter:
     externalNormalMap: 0
     heightScale: 0.25
     normalMapFilter: 0
-    flipGreenChannel: 0
   isReadable: 0
   streamingMipmaps: 0
   streamingMipmapsPriority: 0
   vTOnly: 0
-  ignoreMipmapLimit: 0
+  ignoreMasterTextureLimit: 0
   grayScaleToAlpha: 0
   generateCubemap: 6
   cubemapConvolution: 0
@@ -64,8 +63,6 @@ TextureImporter:
   textureFormatSet: 0
   ignorePngGamma: 0
   applyGammaDecoding: 0
-  swizzle: 50462976
-  cookieLightType: 1
   platformSettings:
   - serializedVersion: 3
     buildTarget: DefaultTexturePlatform
@@ -77,7 +74,6 @@ TextureImporter:
     crunchedCompression: 0
     allowsAlphaSplitting: 0
     overridden: 0
-    ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 3
@@ -90,7 +86,6 @@ TextureImporter:
     crunchedCompression: 0
     allowsAlphaSplitting: 0
     overridden: 0
-    ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 3
@@ -103,7 +98,6 @@ TextureImporter:
     crunchedCompression: 0
     allowsAlphaSplitting: 0
     overridden: 0
-    ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 3
@@ -116,7 +110,6 @@ TextureImporter:
     crunchedCompression: 0
     allowsAlphaSplitting: 0
     overridden: 0
-    ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 3
@@ -129,7 +122,6 @@ TextureImporter:
     crunchedCompression: 0
     allowsAlphaSplitting: 0
     overridden: 0
-    ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
@@ -1868,90 +1860,91 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      FencesSprites_0: 189536627
-      FencesSprites_1: 1645297497
+      FencesSprites_6: -1527101643
       FencesSprites_10: 1447604731
-      FencesSprites_11: -1530031510
-      FencesSprites_12: -331352827
-      FencesSprites_13: 1305642372
-      FencesSprites_14: 1158535744
-      FencesSprites_15: -353870990
-      FencesSprites_16: 944728748
       FencesSprites_17: -568744548
-      FencesSprites_18: 1706717155
-      FencesSprites_19: -1161838860
-      FencesSprites_2: -563456369
-      FencesSprites_20: -743768572
-      FencesSprites_21: 929559686
+      FencesSprites_53: 264717008
+      FencesSprites_39: -1946132784
       FencesSprites_22: -674031204
-      FencesSprites_23: -1914508071
-      FencesSprites_24: -1249342892
-      FencesSprites_25: -1952621588
-      FencesSprites_26: -547301051
-      FencesSprites_27: 1581123715
-      FencesSprites_28: -999024482
       FencesSprites_29: 176148017
-      FencesSprites_3: -476366479
+      FencesSprites_7: -359848761
+      FencesSprites_67: -2082738985
       FencesSprites_30: 1373766076
-      FencesSprites_31: -197892260
+      FencesSprites_11: -1530031510
+      FencesSprites_72: -343858037
+      FencesSprites_42: 1081116961
+      FencesSprites_52: 1157951089
+      FencesSprites_27: 1581123715
+      FencesSprites_77: -1357798787
+      FencesSprites_45: 575700078
+      FencesSprites_60: -999835928
       FencesSprites_32: 141909728
-      FencesSprites_33: 1812319794
+      FencesSprites_47: -981737748
+      FencesSprites_61: -899426071
+      FencesSprites_2: -563456369
+      FencesSprites_9: 2110782385
+      FencesSprites_62: -1206632372
+      FencesSprites_26: -547301051
+      FencesSprites_71: 1611304635
+      FencesSprites_55: 1934087097
+      FencesSprites_19: -1161838860
+      FencesSprites_40: 1815055774
+      FencesSprites_15: -353870990
+      FencesSprites_63: 2121618113
+      FencesSprites_78: -1094429422
+      FencesSprites_38: -1003981753
+      FencesSprites_0: 189536627
+      FencesSprites_5: 973811669
+      FencesSprites_48: -1094937021
+      FencesSprites_20: -743768572
+      FencesSprites_68: -1361645
+      FencesSprites_44: 1588011842
+      FencesSprites_65: 1529086798
+      FencesSprites_43: -1919427214
+      FencesSprites_81: -179476133
+      FencesSprites_80: -906966377
+      FencesSprites_12: -331352827
+      FencesSprites_4: -1889367850
+      FencesSprites_13: 1305642372
+      FencesSprites_16: 944728748
+      FencesSprites_3: -476366479
+      FencesSprites_25: -1952621588
+      FencesSprites_41: -1975413761
+      FencesSprites_56: 927220220
+      FencesSprites_76: 311592601
+      FencesSprites_54: -333882620
+      FencesSprites_69: 1132070420
+      FencesSprites_46: -884787293
+      FencesSprites_49: -1366564336
+      FencesSprites_8: -1157371513
+      FencesSprites_21: 929559686
+      FencesSprites_31: -197892260
+      FencesSprites_66: 1941729594
       FencesSprites_34: 1870293487
       FencesSprites_35: -1156799663
-      FencesSprites_36: 1452415655
-      FencesSprites_37: 1979709816
-      FencesSprites_38: -1003981753
-      FencesSprites_39: -1946132784
-      FencesSprites_4: -1889367850
-      FencesSprites_40: 1815055774
-      FencesSprites_41: -1975413761
-      FencesSprites_42: 1081116961
-      FencesSprites_43: -1919427214
-      FencesSprites_44: 1588011842
-      FencesSprites_45: 575700078
-      FencesSprites_46: -884787293
-      FencesSprites_47: -981737748
-      FencesSprites_48: -1094937021
-      FencesSprites_49: -1366564336
-      FencesSprites_5: 973811669
-      FencesSprites_50: 1173217620
       FencesSprites_51: -1600534916
-      FencesSprites_52: 1157951089
-      FencesSprites_53: 264717008
-      FencesSprites_54: -333882620
-      FencesSprites_55: 1934087097
-      FencesSprites_56: 927220220
-      FencesSprites_57: 66813260
-      FencesSprites_58: 961721392
-      FencesSprites_59: 694324818
-      FencesSprites_6: -1527101643
-      FencesSprites_60: -999835928
-      FencesSprites_61: -899426071
-      FencesSprites_62: -1206632372
-      FencesSprites_63: 2121618113
-      FencesSprites_64: 779952870
-      FencesSprites_65: 1529086798
-      FencesSprites_66: 1941729594
-      FencesSprites_67: -2082738985
-      FencesSprites_68: -1361645
-      FencesSprites_69: 1132070420
-      FencesSprites_7: -359848761
-      FencesSprites_70: -658016965
-      FencesSprites_71: 1611304635
-      FencesSprites_72: -343858037
-      FencesSprites_73: 847804825
+      FencesSprites_50: 1173217620
       FencesSprites_74: 103245805
-      FencesSprites_75: 11819091
-      FencesSprites_76: 311592601
-      FencesSprites_77: -1357798787
-      FencesSprites_78: -1094429422
       FencesSprites_79: 1247289933
-      FencesSprites_8: -1157371513
-      FencesSprites_80: -906966377
-      FencesSprites_81: -179476133
-      FencesSprites_9: 2110782385
-  mipmapLimitGroupName: 
+      FencesSprites_73: 847804825
+      FencesSprites_75: 11819091
+      FencesSprites_18: 1706717155
+      FencesSprites_36: 1452415655
+      FencesSprites_14: 1158535744
+      FencesSprites_23: -1914508071
+      FencesSprites_28: -999024482
+      FencesSprites_59: 694324818
+      FencesSprites_37: 1979709816
+      FencesSprites_1: 1645297497
+      FencesSprites_70: -658016965
+      FencesSprites_33: 1812319794
+      FencesSprites_57: 66813260
+      FencesSprites_64: 779952870
+      FencesSprites_24: -1249342892
+      FencesSprites_58: 961721392
+  spritePackingTag: 
   pSDRemoveMatte: 0
+  pSDShowRemoveMatteOption: 0
   userData: 
   assetBundleName: 
   assetBundleVariant: 

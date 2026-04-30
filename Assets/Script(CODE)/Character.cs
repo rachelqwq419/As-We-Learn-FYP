@@ -44,7 +44,6 @@ public class Character : MonoBehaviour
         criticalMultiplier = GetTotalStat(StatsType.CRD);
         poisonDamage = Mathf.RoundToInt(GetTotalStat(StatsType.PD));
 
-        // 💡 刪除 health = maxHealth，等血量由系統自然繼承
     }
 
     public void Equip(ItemData item)
@@ -101,7 +100,6 @@ public class Character : MonoBehaviour
 
     private float GetItemBonus(ItemData item, StatsType type)
     {
-        // 如果格位係空嘅或者件裝無數值，就直接回傳 0，
         if (item == null || item.statsOfItem == null)
         {
             return 0f;

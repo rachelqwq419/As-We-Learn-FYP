@@ -205,7 +205,7 @@ public class InventoryManager : MonoBehaviour
     }
     public void ThrowItem(ItemData item)
     {
-        // 加入安全檢查，防止爆背包時冇 DropPrefab 或找不到 Player 導致死機
+        // 加入安全檢查
         if (item.dropPrefab != null && player != null)
         {
             Instantiate(item.dropPrefab, player.transform.position, player.transform.rotation);
@@ -378,7 +378,7 @@ public class InventoryManager : MonoBehaviour
         if (oldItem != null)
             AddItem(oldItem);
 
-        // 明確設定新裝備（不要只靠 Equip()）
+        // 明確設定新裝備
         switch (itemType)
         {
             case ItemType.EquipableWeapon:

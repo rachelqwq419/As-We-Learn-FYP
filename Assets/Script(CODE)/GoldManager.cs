@@ -1,12 +1,10 @@
-
 using UnityEngine;
 
 public class GoldManager : MonoBehaviour
-
 {
-
     public static GoldManager instance;
     public int gold;
+
     private void Awake()
     {
         if (instance == null)
@@ -22,12 +20,6 @@ public class GoldManager : MonoBehaviour
         LoadGold();
     }
 
-    // Start is called before the first frame update
-  
-
-    
-
-
     public void AddGold(int amount)
     {
         gold += amount;
@@ -37,7 +29,6 @@ public class GoldManager : MonoBehaviour
     public void ReduceGold(int amount)
     {
         gold -= amount;
-
         if (gold <= 0)
         {
             gold = 0;
@@ -53,12 +44,20 @@ public class GoldManager : MonoBehaviour
 
     public void SaveGold()
     {
-        PlayerPrefs.SetInt("Gold", gold);
+        string currentUser = PlayerPrefs.GetString("CurrentUser", "UnknownUser");
+
+        string saveKey = "Gold_" + currentUser;
+
+        PlayerPrefs.SetInt(saveKey, gold);
         PlayerPrefs.Save(); // Ensure it's written to disk
     }
 
     public void LoadGold()
     {
-        gold = PlayerPrefs.GetInt("Gold", 0); // Default to 0 if not found
+        string currentUser = PlayerPrefs.GetString("CurrentUser", "UnknownUser");
+
+        string saveKey = "Gold_" + currentUser;
+
+        gold = PlayerPrefs.GetInt(saveKey, 30);
     }
 }

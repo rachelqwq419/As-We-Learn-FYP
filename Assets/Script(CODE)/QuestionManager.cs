@@ -2,8 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
-using System.Text; // 🔥 必須加呢行嚟處理中文字
+using System.Text; // 用於處理 UTF-8 編碼，確保中文字符顯示正常
 
+/// <summary>
+/// 題庫管理員：負責從 Google Sheets (CSV) 或本地資源載入題目，並管理題目提取邏輯。
+/// </summary>
 public class QuestionManager : MonoBehaviour
 {
     [System.Serializable]
@@ -16,11 +19,12 @@ public class QuestionManager : MonoBehaviour
         public int correctIdx;
     }
 
+    // 各學科題庫列表
     public List<Question> chineseBank = new List<Question>();
     public List<Question> englishBank = new List<Question>();
     public List<Question> mathBank = new List<Question>();
 
-    /// <summary>本場戰鬥已出過嘅數學題（題庫 key）；用盡後先啟用程序化生成。</summary>
+    /// <summary> 紀錄本場戰鬥已出現過的數學題，避免重複；當題庫耗盡後將切換至程序化生成。 </summary>
     readonly HashSet<string> _mathBankKeysUsedThisBattle = new HashSet<string>();
 
     public static QuestionManager instance;
@@ -36,21 +40,27 @@ public class QuestionManager : MonoBehaviour
         StartCoroutine(InitQuestionBanks());
     }
 
+    /// <summary>
+    /// 初始化所有學科題庫
+    /// </summary>
     IEnumerator InitQuestionBanks()
     {
         yield return StartCoroutine(DownloadOrLoadCSV(chineseCSVUrl, "QuestionData_Chinese", chineseBank));
         yield return StartCoroutine(DownloadOrLoadCSV(englishCSVUrl, "QuestionData_English", englishBank));
         yield return StartCoroutine(DownloadOrLoadCSV(mathCSVUrl, "QuestionData_Math", mathBank));
-        Debug.Log("所有題庫更新程序完成！");
+        Debug.Log("所有題庫加載程序完成。");
     }
 
+    /// <summary>
+    /// 優先從雲端下載 CSV，若失敗則從本地 Resources 載入備份
+    /// </summary>
     IEnumerator DownloadOrLoadCSV(string url, string localFileName, List<Question> targetList)
     {
         bool downloadSuccess = false;
 
         if (!string.IsNullOrEmpty(url))
         {
-            // 🔥 破解快取大法：喺 URL 後面加個隨機數，等 Google 每次都俾最新資料你
+            // 在 URL 後方加入隨機數，避免獲取到舊的緩存資料
             string cacheBuster = url + "&t=" + Random.Range(0, 1000000);
 
             using (UnityWebRequest www = UnityWebRequest.Get(cacheBuster))
@@ -59,7 +69,7 @@ public class QuestionManager : MonoBehaviour
 
                 if (www.result == UnityWebRequest.Result.Success)
                 {
-                    // 🔥 強制使用 UTF-8 解碼，防止中文字變亂碼
+                    // 使用 UTF-8 編碼解碼，防止中文出現亂碼
                     string decodedText = Encoding.UTF8.GetString(www.downloadHandler.data);
 
                     if (!string.IsNullOrEmpty(decodedText) && decodedText.Contains(","))
@@ -67,7 +77,7 @@ public class QuestionManager : MonoBehaviour
                         ParseCSV(decodedText, targetList);
                         if (targetList.Count > 0)
                         {
-                            Debug.Log($"成功從雲端更新 {localFileName}！現有 {targetList.Count} 題");
+                            Debug.Log($"雲端更新成功：{localFileName}，現有 {targetList.Count} 題");
                             downloadSuccess = true;
                         }
                     }
@@ -75,37 +85,39 @@ public class QuestionManager : MonoBehaviour
             }
         }
 
+        // 若雲端下載失敗或網址為空，則使用 Resources 下的本地數據
         if (!downloadSuccess)
         {
             TextAsset localData = Resources.Load<TextAsset>(localFileName);
             if (localData != null)
             {
-                Debug.Log($"雲端失敗，使用本地備份: {localFileName}");
+                Debug.Log($"雲端下載失敗，載入本地備份：{localFileName}");
                 ParseCSV(localData.text, targetList);
             }
         }
     }
 
+    /// <summary>
+    /// 解析 CSV 字串並根據當前遊戲難度篩選題目
+    /// </summary>
     void ParseCSV(string csvText, List<Question> targetList)
     {
         targetList.Clear();
-        // 🔥 兼容不同平台的換行符 (CRLF 或 LF)
+        // 兼容 Windows (CRLF) 與 Unix (LF) 的換行符
         string[] rows = csvText.Split(new[] { '\r', '\n' }, System.StringSplitOptions.RemoveEmptyEntries);
 
         if (rows.Length <= 1) return;
 
-        // 讀 Header，用欄名做 mapping
+        // 讀取首行標題，根據名稱映射索引
         string[] headerCols = rows[0].Trim().Split(',');
         int levelCol = FindHeaderIndex(headerCols, "Level", "level", "等級", "年級");
-
         int qCol = FindHeaderIndex(headerCols, "Question", "question", "題目", "題干", "qText");
-        // 🔥 已加入 option1, option2, option3 兼容你的最新 Sheet
         int aCol = FindHeaderIndex(headerCols, "OptionA", "optionA", "A", "選項A", "option1");
         int bCol = FindHeaderIndex(headerCols, "OptionB", "optionB", "B", "選項B", "option2");
         int cCol = FindHeaderIndex(headerCols, "OptionC", "optionC", "C", "選項C", "option3");
         int correctCol = FindHeaderIndex(headerCols, "Correct", "correct", "Answer", "answer", "正確答案", "correctIdx");
 
-        // 舊格式 fallback
+        // 若找不到對應標題，則使用預設索引
         if (qCol < 0) qCol = 1;
         if (aCol < 0) aCol = 2;
         if (bCol < 0) bCol = 3;
@@ -119,7 +131,7 @@ public class QuestionManager : MonoBehaviour
 
             string[] cols = line.Split(',');
 
-            // Level 篩選
+            // 難度等級過濾
             if (levelCol >= 0 && cols.Length > levelCol)
             {
                 if (int.TryParse(cols[levelCol].Trim(), out int rowLevel))
@@ -132,7 +144,7 @@ public class QuestionManager : MonoBehaviour
             if (cols.Length > maxIdxNeeded)
             {
                 Question q = new Question();
-                // 🔥 修復位：全面加強版 .Trim()，清走 Excel 啲隱形空格，保證 Cat = cat！
+                // 執行 Trim() 移除不可見字符或多餘空格，確保後續匹配準確
                 q.qText = cols[qCol].Trim();
                 q.option1 = cols[aCol].Trim();
                 q.option2 = cols[bCol].Trim();
@@ -143,6 +155,9 @@ public class QuestionManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 獲取指定學科的題目，數學科具備特殊的重複檢查與程序化生成邏輯
+    /// </summary>
     public Question GetRandomQuestion(string subject)
     {
         if (subject == "Math")
@@ -156,6 +171,9 @@ public class QuestionManager : MonoBehaviour
         _mathBankKeysUsedThisBattle.Clear();
     }
 
+    /// <summary>
+    /// 生成題目唯一標識符，用於比對題目是否重複
+    /// </summary>
     static string MathQuestionKey(Question q)
     {
         if (q == null) return "";
@@ -163,6 +181,9 @@ public class QuestionManager : MonoBehaviour
         return $"{q.qText}|{q.option1}|{q.option2}|{o3}|{q.correctIdx}";
     }
 
+    /// <summary>
+    /// 優先從數學題庫中抽取未使用的題目，若全部用盡則改為動態生成
+    /// </summary>
     Question GetMathQuestionBankFirstThenProcedural()
     {
         if (mathBank != null && mathBank.Count > 0)
@@ -189,6 +210,9 @@ public class QuestionManager : MonoBehaviour
         return GenerateProceduralMathQuestion();
     }
 
+    /// <summary>
+    /// 根據當前選擇等級動態生成簡單的四則運算題目
+    /// </summary>
     Question GenerateProceduralMathQuestion()
     {
         int level = Mathf.Clamp(GameData.chosenLevel, 1, 3);
@@ -217,12 +241,16 @@ public class QuestionManager : MonoBehaviour
             q.option1 = (a * b).ToString();
         }
 
+        // [INPUT] 標籤用於通知 UI 使用輸入框模式而非選項按鈕
         q.option2 = "[INPUT]";
         q.option3 = "";
         q.correctIdx = 1;
         return q;
     }
 
+    /// <summary>
+    /// 從指定的學科題庫中隨機抽取一題
+    /// </summary>
     Question GetRandomQuestionFromList(string subject)
     {
         List<Question> targetList = null;
@@ -234,6 +262,9 @@ public class QuestionManager : MonoBehaviour
         return null;
     }
 
+    /// <summary>
+    /// 匹配標題欄位索引，不分大小寫並忽略引號
+    /// </summary>
     int FindHeaderIndex(string[] headerCols, params string[] candidates)
     {
         if (headerCols == null) return -1;
