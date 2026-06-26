@@ -10,8 +10,6 @@ The project combines game mechanics, quiz-based learning, character dialogue, an
 
 ## Screenshots
 
-> Put the screenshots inside `docs/images/` in your GitHub repository using the filenames below, or rename the paths to match your own image files.
-
 <p align="center">
   <img src="docs/images/map-editor.png" alt="Map design and level layout" width="100%">
 </p>
