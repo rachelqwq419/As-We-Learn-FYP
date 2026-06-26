@@ -1,5 +1,9 @@
 # As We Learn
 
+<p align="center">
+  <img src="docs/images/app-icon.png" alt="As We Learn app icon" width="320">
+</p>
+
 **As We Learn** is a 2D educational RPG that turns classroom learning into an interactive adventure. Players explore a pixel-art world, meet story characters, battle subject-themed monsters, and answer questions to progress.
 
 The project combines game mechanics, quiz-based learning, character dialogue, and teacher-facing data review so students can learn through play while teachers can observe common mistakes and learning patterns.
@@ -7,10 +11,6 @@ The project combines game mechanics, quiz-based learning, character dialogue, an
 ## Screenshots
 
 > Put the screenshots inside `docs/images/` in your GitHub repository using the filenames below, or rename the paths to match your own image files.
-
-<p align="center">
-  <img src="docs/images/battle-scene.png" alt="Battle scene with quiz combat" width="100%">
-</p>
 
 <p align="center">
   <img src="docs/images/map-editor.png" alt="Map design and level layout" width="100%">
@@ -29,7 +29,7 @@ The project combines game mechanics, quiz-based learning, character dialogue, an
 </p>
 
 <p align="center">
-  <img src="docs/images/app-icon.png" alt="As We Learn app icon" width="320">
+  <img src="docs/images/battle-scene.png" alt="Battle scene with quiz combat" width="100%">
 </p>
 
 <p align="center">
